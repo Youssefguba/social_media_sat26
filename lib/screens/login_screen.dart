@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:social_media_sat26/screens/home_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -14,7 +16,15 @@ class LoginScreen extends StatelessWidget {
           Image.asset('assets/images/pattern.png'),
           OutlinedButton(
             onPressed: () async {
-              await signInWithGoogle();
+              final UserCredential userData = await signInWithGoogle();
+
+              uploadUserData(userData);
+
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => HomeScreen(),
+                ),
+              );
             },
             child: ListTile(
               title: const Text(
@@ -34,6 +44,18 @@ class LoginScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void uploadUserData(UserCredential userData) {
+    final database = FirebaseFirestore.instance;
+
+    database.collection('users').doc(userData.user?.uid).set(
+      {
+        'name': userData.user?.displayName,
+        'photoURL': userData.user?.photoURL,
+      },
+      SetOptions(merge: true),
     );
   }
 

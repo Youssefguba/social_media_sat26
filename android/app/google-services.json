@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "389716641082",
+    "firebase_url": "https://socialsat-default-rtdb.firebaseio.com",
     "project_id": "socialsat",
     "storage_bucket": "socialsat.appspot.com"
   },
