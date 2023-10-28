@@ -4,8 +4,28 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:social_media_sat26/screens/home_screen.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(seconds: 1), () {
+      if (FirebaseAuth.instance.currentUser != null) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => const HomeScreen(),
+          ),
+          (route) => false,
+        );
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +40,11 @@ class LoginScreen extends StatelessWidget {
 
               uploadUserData(userData);
 
-              Navigator.of(context).push(
+              Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(
-                  builder: (context) => HomeScreen(),
+                  builder: (context) => const HomeScreen(),
                 ),
+                (route) => false,
               );
             },
             child: ListTile(
@@ -65,7 +86,8 @@ class LoginScreen extends StatelessWidget {
         await GoogleSignIn(scopes: ['profile', 'email']).signIn();
 
     // Obtain the auth details from the request
-    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
 
     // Create a new credential
     final credential = GoogleAuthProvider.credential(
